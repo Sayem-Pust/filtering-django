@@ -59,7 +59,7 @@
             <div class="form-row">
                 <div class="form-group col-12">
                     <div class="input-group">
-                        <input class="form-control py-2 border-right-0 border" type="search" name="title_contains" placeholder="Title contains..." />
+                        <input class="form-control py-2 border-right-0 border" type="search" id="searchField" name="title_contains" placeholder="Title contains..." />
                         <span class="input-group-append">
                             <div class="input-group-text bg-transparent">
                                 <i class="fa fa-search"></i>
@@ -71,19 +71,7 @@
             <div class="form-row">
                 <div class="form-group col-12">
                     <div class="input-group">
-                        <input class="form-control py-2 border-right-0 border" type="search" name="id_exact" placeholder="ID exact..." />
-                        <span class="input-group-append">
-                            <div class="input-group-text bg-transparent">
-                                <i class="fa fa-search"></i>
-                            </div>
-                        </span>
-                    </div>
-                </div>        
-            </div>
-            <div class="form-row">
-                <div class="form-group col-12">
-                    <div class="input-group">
-                        <input class="form-control py-2 border-right-0 border" type="search" name="title_or_author" placeholder="Title or author..." />
+                        <input class="form-control py-2 border-right-0 border" id="id-exact" type="search" name="id_exact" placeholder="ID exact..." />
                         <span class="input-group-append">
                             <div class="input-group-text bg-transparent">
                                 <i class="fa fa-search"></i>
@@ -140,12 +128,11 @@
 
           <hr/>
 
-          <div class="row">
-            <ul>
+          <div class="row" >
+            <ul id="box">
               {% for journal in queryset %}
                 <li>
                   {{ journal.title }}
-                  <span>Author: {{ journal.author.name }}</span>
                   <span>
                     {% for cat in journal.categories.all %}
                       {{ cat }}
@@ -165,8 +152,287 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>
+      const searchField = document.querySelector("#searchField")
+      const idExact = document.querySelector("#id-exact")
+      const viewCountMin = document.querySelector("#viewCountMin")
+      const viewCountMax = document.querySelector("#viewCountMax")
+      const publishDateMin = document.querySelector("#publishDateMin")
+      const publishDateMax = document.querySelector("#publishDateMax")
+      const category = document.querySelector("#category")
+      const reviewed = document.querySelector("#reviewed")
+      const notReviewed = document.querySelector("#notReviewed")
+      let filterArr = []
+      searchField.addEventListener('keyup', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({searchText: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            // filterArr = data.filter(info => info['title'].includes(searchValue))
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      //id 
+      idExact.addEventListener('keyup', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({idText: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // viewCountMin
+
+      viewCountMin.addEventListener('keyup', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({countMin: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // viewCountMax
+
+      viewCountMax.addEventListener('keyup', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({countMax: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // publishDateMin
+
+      publishDateMin.addEventListener('mousedown', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({dateMin: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // publishDateMax
+
+      publishDateMax.addEventListener('click', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({dateMax: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // category
+
+      category.addEventListener('click', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue.length > 0) {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({category: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // reviewed
+      reviewed.addEventListener('click', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue==="on") {
+          console.log(searchValue)
+
+          fetch("/search-expenses/", {
+            body: JSON.stringify({reviewed: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+
+      // not reviewed
+      notReviewed.addEventListener('click', (e) => {
+        const searchValue = e.target.value;
+        if(searchValue === "on") {
+          console.log(searchValue)
+          fetch("/search-expenses/", {
+            body: JSON.stringify({notReviewed: searchValue}),
+            method: "POST"
+          }).then(res => res.json())
+          .then(data => {
+            console.log(data)
+            box.innerHTML=""
+            if(data.length > 0) {
+              data.map(item => {
+                box.innerHTML += `<li>
+                  ${item['title']}
+                  <span>Publish date: ${item['publish_date']}</span>
+                  <span>View count: ${item['views']}</span>
+                  <span>Reviewed: ${item['reviewed']}</span>
+                  </li><br>`
+              })
+            } else {
+              box.innerHTML = "No data found"
+            }
+
+          })
+        }
+      })
+    </script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  </body>
+
+</body>
 </html>
